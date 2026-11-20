@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AddBankFormData } from "@/types/withdrawal";
 import { useAppSelector } from "@/store/hooks";
+import { PropagateLoader } from "react-spinners";
 
 const profileSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -239,7 +240,9 @@ export default function ProfilePage() {
         </div>
 
         {accountsLoading ? (
-          <p className="text-gray-500 text-sm">Loading bank accounts...</p>
+          <div className="flex justify-center py-4">
+            <PropagateLoader color="#16A34A" size={12} />
+          </div>
         ) : accounts && accounts.length > 0 ? (
           <div className="space-y-3">
             {accounts.map((account) => (

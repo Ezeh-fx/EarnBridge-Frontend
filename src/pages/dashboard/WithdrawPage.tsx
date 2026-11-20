@@ -10,6 +10,7 @@ import { useWithdrawals, useCreateWithdrawal } from "@/hooks/useWithdrawals";
 import { useBankAccounts } from "@/hooks/useBankAccounts";
 import { formatMoney } from "@/lib/formatMoney";
 import type { WithdrawalFormData, AddBankFormData, Withdrawal } from "@/types/withdrawal";
+import { PropagateLoader } from "react-spinners";
 
 const withdrawalSchema = z.object({
   amount: z.string().min(1, "Amount is required").refine(
@@ -172,7 +173,9 @@ export default function WithdrawPage() {
           </div>
 
           {accountsLoading ? (
-            <p className="text-gray-500 text-sm">Loading bank accounts...</p>
+            <div className="flex justify-center py-4">
+              <PropagateLoader color="#16A34A" size={12} />
+            </div>
           ) : accounts && accounts.length > 0 ? (
             <div className="space-y-2">
               {accounts.map((account) => (
@@ -307,7 +310,9 @@ export default function WithdrawPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Withdrawals</h2>
         {withdrawalsLoading ? (
           <BoxCard>
-            <p className="text-gray-600">Loading withdrawals...</p>
+            <div className="flex justify-center py-4">
+              <PropagateLoader color="#16A34A" />
+            </div>
           </BoxCard>
         ) : withdrawals && withdrawals.length > 0 ? (
           <div className="space-y-3">

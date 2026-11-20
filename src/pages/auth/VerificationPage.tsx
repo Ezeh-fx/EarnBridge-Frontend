@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { images } from "@/constants/images";
 import { motion } from "framer-motion";
+import { PropagateLoader } from "react-spinners";
 import { useVerifyOtp } from "@/hooks/auth/use-auth";
 
 interface VerificationLocationState {
@@ -155,9 +156,10 @@ export default function VerificationPage() {
         </motion.div>
 
         {verifyOtp.isPending && (
-          <p className="text-center text-sm text-gray-600 mb-4">
-            Verifying...
-          </p>
+          <div className="flex flex-col items-center gap-2 mb-4">
+            <PropagateLoader color="#16A34A" size={14} />
+            <p className="text-sm text-gray-600">Verifying...</p>
+          </div>
         )}
 
         {verifyOtp.isError && (

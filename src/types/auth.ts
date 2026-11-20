@@ -31,3 +31,28 @@ export interface AuthResponse {
 export interface AuthMeResponse {
   user: AuthUser;
 }
+
+export interface GoogleAuthPayload {
+  idToken: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface VerifyResetTokenPayload {
+  token: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
+export interface ResetTokenStatus {
+  valid: boolean;
+}
+
+export interface ApiDataEnvelope<T> {
+  data: T;
+}

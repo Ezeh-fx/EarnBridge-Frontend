@@ -5,12 +5,18 @@ import { persistor } from '@/store';
 import { useAppDispatch } from '@/store/hooks';
 import { resetUser, setProfile } from '@/store/slices/userSlice';
 import type {
+  ApiDataEnvelope,
   AuthMeResponse,
   AuthResponse,
   AuthUser,
+  ForgotPasswordPayload,
+  GoogleAuthPayload,
   LoginPayload,
   RegisterPayload,
+  ResetPasswordPayload,
+  ResetTokenStatus,
   VerifyOtpPayload,
+  VerifyResetTokenPayload,
 } from '@/types/auth';
 
 export function useRegister() {
@@ -41,6 +47,50 @@ export function useLogin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
     },
+  });
+}
+
+export function useGoogleLogin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: GoogleAuthPayload) =>
+      api.post<ApiDataEnvelope<{ user: AuthUser }>>('/auth/google', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    },
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (data: ForgotPasswordPayload) =>
+      api.post<ApiDataEnvelope<{ message: string }>>(
+        '/auth/forgot-password',
+        data
+      ),
+  });
+}
+
+export function useVerifyResetToken() {
+  return useMutation({
+    mutationFn: async (data: VerifyResetTokenPayload) => {
+      const res = await api.post<ApiDataEnvelope<ResetTokenStatus>>(
+        '/auth/verify-reset-token',
+        data
+      );
+      return res.data;
+    },
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (data: ResetPasswordPayload) =>
+      api.post<ApiDataEnvelope<{ message: string }>>(
+        '/auth/reset-password',
+        data
+      ),
   });
 }
 
@@ -78,7 +128,10 @@ export function useLogout() {
   const dispatch = useAppDispatch();
 
   return useMutation({
-    mutationFn: () => api.post<AuthResponse>('/logout', {}),
+    mutationFn: () => api.post<AuthResponse>('/auth/logout', {}),
+    onError: (error) => {
+      console.log('Logout error:', error);
+    },
     onSettled: () => {
       queryClient.clear();
       dispatch(resetUser());

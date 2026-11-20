@@ -4,6 +4,8 @@ import SignUpPage from "@/pages/auth/SignUpPage";
 import SignInPage from "@/pages/auth/SignInPage";
 import SignOutPage from "@/pages/auth/SignOutPage";
 import VerificationPage from "@/pages/auth/VerificationPage";
+import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import DashboardLayout from "@/pages/dashboard/DashboardLayout";
 import DashboardHome from "@/pages/dashboard/DashboardHome";
 import WithdrawPage from "@/pages/dashboard/WithdrawPage";
@@ -32,6 +34,14 @@ export const router = createBrowserRouter([
   {
     path: "/verify",
     element: <VerificationPage />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPasswordPage />,
   },
   {
     path: "/app",

@@ -2,13 +2,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000
 
 // Endpoints where a 401 means bad credentials/input, not an expired session.
 // These must never trigger a token refresh.
-const NO_REFRESH_PREFIXES = ['/auth/', '/refresh', '/logout'];
+const NO_REFRESH_PREFIXES = ['/auth/'];
 
 let refreshPromise: Promise<void> | null = null;
 
 function refreshSession(): Promise<void> {
   // Share a single in-flight refresh across all concurrent 401s.
-  refreshPromise ??= fetch(`${API_BASE_URL}/refresh`, {
+  refreshPromise ??= fetch(`${API_BASE_URL}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -57,8 +57,15 @@ export async function apiRequest<T>(
       }
     }
 
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || 'Request failed');
+    const body: {
+      error?: { code?: string; message?: string };
+      message?: string;
+    } | null = await response.json().catch(() => null);
+    const error = new Error(
+      body?.error?.message ?? body?.message ?? 'Request failed'
+    ) as Error & { code?: string };
+    error.code = body?.error?.code;
+    throw error;
   }
 
   if (response.status === 204) {
