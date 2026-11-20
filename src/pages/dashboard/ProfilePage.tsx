@@ -242,6 +242,7 @@ export default function ProfilePage() {
         {accountsLoading ? (
           <div className="flex justify-center py-4">
             <PropagateLoader color="#16A34A" size={12} />
+            <span className="sr-only">Loading bank accounts...</span>
           </div>
         ) : accounts && accounts.length > 0 ? (
           <div className="space-y-3">

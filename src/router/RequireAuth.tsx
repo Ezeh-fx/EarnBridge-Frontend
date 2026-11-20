@@ -9,6 +9,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <PropagateLoader color="#16A34A" />
+        <span className="sr-only">Loading your session...</span>
       </div>
     );
   }

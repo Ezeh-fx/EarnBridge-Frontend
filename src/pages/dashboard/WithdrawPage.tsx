@@ -175,6 +175,7 @@ export default function WithdrawPage() {
           {accountsLoading ? (
             <div className="flex justify-center py-4">
               <PropagateLoader color="#16A34A" size={12} />
+              <span className="sr-only">Loading bank accounts...</span>
             </div>
           ) : accounts && accounts.length > 0 ? (
             <div className="space-y-2">
@@ -312,6 +313,7 @@ export default function WithdrawPage() {
           <BoxCard>
             <div className="flex justify-center py-4">
               <PropagateLoader color="#16A34A" />
+              <span className="sr-only">Loading withdrawals...</span>
             </div>
           </BoxCard>
         ) : withdrawals && withdrawals.length > 0 ? (
