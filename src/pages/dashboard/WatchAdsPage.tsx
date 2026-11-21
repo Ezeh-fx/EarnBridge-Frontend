@@ -6,7 +6,12 @@ import { useBalance } from "@/hooks/useBalance";
 import { PropagateLoader } from "react-spinners";
 
 export default function WatchAdsPage() {
-  const { data: balance, isLoading: balanceLoading } = useBalance();
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    isError: balanceError,
+    refetch: refetchBalance,
+  } = useBalance();
   const featuredVideo = {
     title: "Samsung Galaxy S24 Ultra",
     brand: "Samsung",
@@ -77,6 +82,18 @@ export default function WatchAdsPage() {
           </div>
           {balanceLoading ? (
             <PropagateLoader color="#16A34A" size={16} />
+          ) : balanceError ? (
+            <div className="flex items-center gap-3">
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Unavailable
+              </p>
+              <button
+                onClick={() => refetchBalance()}
+                className="text-green-700 text-sm font-semibold hover:underline"
+              >
+                Retry
+              </button>
+            </div>
           ) : (
             <p className="text-2xl sm:text-3xl font-bold text-gray-900">
               {formatMoney(balance?.available ?? 0)}

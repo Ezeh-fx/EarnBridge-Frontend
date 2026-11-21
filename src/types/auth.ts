@@ -56,3 +56,8 @@ export interface ResetTokenStatus {
 export interface ApiDataEnvelope<T> {
   data: T;
 }
+
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}

@@ -15,6 +15,7 @@ import type {
   RegisterPayload,
   ResetPasswordPayload,
   ResetTokenStatus,
+  ChangePasswordPayload,
   VerifyOtpPayload,
   VerifyResetTokenPayload,
 } from '@/types/auth';
@@ -91,6 +92,27 @@ export function useResetPassword() {
         '/auth/reset-password',
         data
       ),
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: ChangePasswordPayload) =>
+      api.post<ApiDataEnvelope<{ message: string }>>('/password', data),
+  });
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+
+  return useMutation({
+    mutationFn: () => api.delete<ApiDataEnvelope<{ message: string }>>('/me'),
+    onSettled: () => {
+      queryClient.clear();
+      dispatch(resetUser());
+      void persistor.purge();
+    },
   });
 }
 
