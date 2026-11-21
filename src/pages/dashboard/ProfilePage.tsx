@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, User, Mail, Phone, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2 } from "lucide-react";
+import { Camera, User, Mail, Phone, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2, LogOut } from "lucide-react";
 import BoxCard from "@/components/reusable/BoxCard";
 import { images } from "@/constants/images";
 import { useBankAccounts } from "@/hooks/useBankAccounts";
@@ -37,6 +38,7 @@ const addBankSchema = z.object({
 });
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAddBankModal, setShowAddBankModal] = useState(false);
   const profile = useAppSelector((state) => state.user.profile);
@@ -396,6 +398,18 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+      </BoxCard>
+
+      {/* Log Out - Mobile only (desktop uses the sidebar) */}
+      <BoxCard className="lg:hidden">
+        <button
+          type="button"
+          onClick={() => navigate("/signout")}
+          className="w-full flex items-center justify-center gap-3 py-3 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition-colors"
+        >
+          <LogOut className="h-5 w-5" />
+          Log Out
+        </button>
       </BoxCard>
 
       {/* Add Bank Account Modal */}

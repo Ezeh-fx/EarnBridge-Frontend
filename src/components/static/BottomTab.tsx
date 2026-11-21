@@ -19,7 +19,7 @@ export default function BottomTab() {
             to={item.to}
             end={item.to === "/app"}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 px-4 py-3 transition-colors ${
+              `flex flex-col items-center justify-center gap-1 px-3 py-3 transition-colors ${
                 isActive
                   ? "text-primary"
                   : "text-gray-500"
@@ -27,7 +27,9 @@ export default function BottomTab() {
             }
           >
             <item.icon className="h-6 w-6" />
-            <span className="text-xs font-medium">{item.label}</span>
+            <span className="text-xs font-medium text-center whitespace-nowrap">
+              {item.label}
+            </span>
           </NavLink>
         ))}
       </div>
