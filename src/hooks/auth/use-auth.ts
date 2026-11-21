@@ -98,7 +98,7 @@ export function useResetPassword() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: (data: ChangePasswordPayload) =>
-      api.post<ApiDataEnvelope<{ message: string }>>('/password', data),
+      api.post<ApiDataEnvelope<{ message: string }>>('/me/password', data),
   });
 }
 
