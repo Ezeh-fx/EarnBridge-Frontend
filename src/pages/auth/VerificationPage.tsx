@@ -28,7 +28,7 @@ export default function VerificationPage() {
     verifyOtp.mutate(
       { email, otp },
       {
-        onSuccess: () => navigate("/app", { replace: true }),
+        onSuccess: () => navigate("/signin", { replace: true }),
       }
     );
   };
@@ -156,7 +156,7 @@ export default function VerificationPage() {
         </motion.div>
 
         {verifyOtp.isPending && (
-          <div className="flex flex-col items-center gap-2 mb-4">
+          <div className="flex flex-col items-center gap-4 mb-4">
             <PropagateLoader color="#16A34A" size={14} />
             <p className="text-sm text-gray-600">Verifying...</p>
           </div>

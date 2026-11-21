@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, User, Mail, Phone, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2, LogOut } from "lucide-react";
+import { Camera, User, Mail, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2, LogOut } from "lucide-react";
 import BoxCard from "@/components/reusable/BoxCard";
 import { images } from "@/constants/images";
 import { useBankAccounts } from "@/hooks/useBankAccounts";
@@ -17,7 +17,6 @@ import { PropagateLoader } from "react-spinners";
 const profileSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  phoneNumber: z.string().min(1, "Phone number is required"),
 });
 
 const passwordSchema = z.object({
@@ -60,7 +59,6 @@ export default function ProfilePage() {
     defaultValues: {
       fullName: "",
       email: "",
-      phoneNumber: "",
     },
   });
 
@@ -69,7 +67,6 @@ export default function ProfilePage() {
       resetProfile({
         fullName: profile.displayName ?? "",
         email: profile.email,
-        phoneNumber: "",
       });
     }
   }, [profile, resetProfile]);
@@ -197,23 +194,6 @@ export default function ProfilePage() {
             </div>
             {profileErrors.email && (
               <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="tel"
-                {...registerProfile("phoneNumber")}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
-              />
-            </div>
-            {profileErrors.phoneNumber && (
-              <p className="text-red-500 text-sm mt-1">{profileErrors.phoneNumber.message}</p>
             )}
           </div>
         </div>
