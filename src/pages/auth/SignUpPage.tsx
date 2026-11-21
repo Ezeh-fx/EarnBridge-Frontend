@@ -7,13 +7,7 @@ import { z } from "zod";
 import { Mail, Lock, User } from "lucide-react";
 import AuthLeft from "@/components/reusable/authLeft";
 import FormInput from "@/components/reusable/FormInput";
-import {
-  GoogleLogin,
-  GoogleOAuthProvider,
-  type CredentialResponse,
-} from "@react-oauth/google";
-import { useGoogleLogin } from "@/hooks/auth/use-auth";
-import { PropagateLoader } from "react-spinners";
+import GoogleSignInButton from "@/components/reusable/GoogleSignInButton";
 import { useRegister } from "@/hooks/auth/use-auth";
 
 const signUpSchema = z.object({
@@ -44,24 +38,6 @@ export default function SignUpPage() {
       // Error is surfaced via registerMutation.error below
     }
   };
-
-   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
-    const googleLogin = useGoogleLogin();
-  
-    if (!clientId) {
-      return null;
-    }
-  
-    const handleSuccess = (response: CredentialResponse) => {
-      const idToken = response.credential;
-      if (!idToken) return;
-  
-      googleLogin.mutate(
-        { idToken },
-        { onSuccess: () => navigate("/app", { replace: true }) }
-      );
-    };
-
 
   return (
     <div className="min-h-screen bg-white flex">
@@ -110,26 +86,7 @@ export default function SignUpPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-               <GoogleOAuthProvider clientId={clientId}>
-      <div className="w-full flex flex-col items-center gap-2">
-        {googleLogin.isPending ? (
-          <PropagateLoader color="#16A34A" />
-        ) : (
-          <GoogleLogin
-            onSuccess={handleSuccess}
-            onError={() => console.log("Google sign-in failed")}
-            theme="outline"
-            size="large"
-            width="320"
-          />
-        )}
-        {googleLogin.isError && (
-          <p className="text-sm text-red-600 text-center">
-            {googleLogin.error.message}
-          </p>
-        )}
-      </div>
-    </GoogleOAuthProvider>
+            <GoogleSignInButton />
           </motion.div>
 
           {/* Divider */}
