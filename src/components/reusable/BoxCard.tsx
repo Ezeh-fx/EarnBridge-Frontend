@@ -11,7 +11,7 @@ export default function BoxCard({ children, className, padding = "p-6" }: BoxCar
   return (
     <div
       className={cn(
-        "bg-white rounded-xl border border-gray-200 shadow-sm",
+        "bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-w-0",
         padding,
         className
       )}

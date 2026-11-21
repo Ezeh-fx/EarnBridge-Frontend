@@ -1,7 +1,6 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import userReducer from './slices/userSlice';
-import bankAccountsReducer from './slices/bankAccountsSlice';
 
 
 // Custom storage using localStorage directly
@@ -19,13 +18,12 @@ const storage = {
 
 const rootReducer = combineReducers({
   user: userReducer,
-  bankAccounts: bankAccountsReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user', 'bankAccounts'], // Persist user slice (hasSeenWelcome, device userId, profile mirror) and bank accounts
+  whitelist: ['user'], // Persist user slice (hasSeenWelcome, device userId, profile mirror)
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

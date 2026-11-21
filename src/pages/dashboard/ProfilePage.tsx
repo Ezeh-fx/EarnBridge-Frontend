@@ -3,17 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, User, Mail, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2, LogOut } from "lucide-react";
+import { Camera, User, Mail, Lock, AlertTriangle, LogOut } from "lucide-react";
 import BoxCard from "@/components/reusable/BoxCard";
 import { images } from "@/constants/images";
-import { useBankAccounts } from "@/hooks/useBankAccounts";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { AddBankFormData } from "@/types/withdrawal";
 import { useAppSelector } from "@/store/hooks";
 import { useChangePassword, useDeleteAccount } from "@/hooks/auth/use-auth";
-import { PropagateLoader } from "react-spinners";
 
 const profileSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -32,26 +26,13 @@ const passwordSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
-const addBankSchema = z.object({
-  accountNumber: z.string().min(10, "Account number must be at least 10 digits").max(11, "Account number must be at most 11 digits"),
-  bankName: z.string().min(1, "Bank name is required"),
-});
-
 export default function ProfilePage() {
   const navigate = useNavigate();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showAddBankModal, setShowAddBankModal] = useState(false);
   const profile = useAppSelector((state) => state.user.profile);
   const changePassword = useChangePassword();
   const deleteAccount = useDeleteAccount();
   const [passwordSuccess, setPasswordSuccess] = useState(false);
-
-  const {
-    accounts,
-    isLoading: accountsLoading,
-    addAccount,
-    removeAccount,
-  } = useBankAccounts();
 
   const {
     register: registerProfile,
@@ -89,19 +70,6 @@ export default function ProfilePage() {
     },
   });
 
-  const {
-    register: registerAddBank,
-    handleSubmit: handleSubmitAddBank,
-    formState: { errors: addBankErrors, isSubmitting: isAddingBank },
-    reset: resetAddBank,
-  } = useForm<AddBankFormData>({
-    resolver: zodResolver(addBankSchema),
-    defaultValues: {
-      accountNumber: "",
-      bankName: "",
-    },
-  });
-
   const onProfileSubmit = async (data: ProfileFormData) => {
     console.log("Profile update:", data);
     // TODO: Call API to update profile
@@ -118,24 +86,6 @@ export default function ProfilePage() {
       setPasswordSuccess(true);
     } catch {
       // Error is surfaced via changePassword.error below
-    }
-  };
-
-  const onAddBankSubmit = async (data: AddBankFormData) => {
-    try {
-      await addAccount(data);
-      resetAddBank();
-      setShowAddBankModal(false);
-    } catch (error) {
-      console.error("Failed to add bank account:", error);
-    }
-  };
-
-  const handleRemoveAccount = async (accountId: string) => {
-    try {
-      await removeAccount(accountId);
-    } catch (error) {
-      console.error("Failed to remove bank account:", error);
     }
   };
 
@@ -219,68 +169,6 @@ export default function ProfilePage() {
         >
           {isSubmittingProfile ? "Saving..." : "Save Changes"}
         </button>
-      </BoxCard>
-
-      {/* Your Bank Accounts */}
-      <BoxCard className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Your Bank Accounts</h3>
-          <button
-            onClick={() => setShowAddBankModal(true)}
-            className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-dark transition-colors flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add New Bank Account
-          </button>
-        </div>
-
-        {accountsLoading ? (
-          <div className="flex justify-center py-4">
-            <PropagateLoader color="#16A34A" size={12} />
-            <span className="sr-only">Loading bank accounts...</span>
-          </div>
-        ) : accounts && accounts.length > 0 ? (
-          <div className="space-y-3">
-            {accounts.map((account) => (
-              <div
-                key={account.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="bg-green-100 p-3 rounded-lg">
-                    <Building2 className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-gray-900">{account.bankName}</p>
-                      {account.isVerified && (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-500">
-                      **** {account.accountNumber.slice(-4)}
-                    </p>
-                    {account.accountName && (
-                      <p className="text-xs text-gray-400">{account.accountName}</p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleRemoveAccount(account.id)}
-                  className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">No bank accounts added yet</p>
-            <p className="text-sm text-gray-400">Add a bank account to withdraw your earnings</p>
-          </div>
-        )}
       </BoxCard>
 
       {/* Change Password */}
@@ -425,62 +313,6 @@ export default function ProfilePage() {
         </button>
       </BoxCard>
 
-      {/* Add Bank Account Modal */}
-      <Dialog open={showAddBankModal} onOpenChange={setShowAddBankModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add New Bank Account</DialogTitle>
-            <DialogDescription>
-              Add your bank account details to withdraw your earnings.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmitAddBank(onAddBankSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="bankName">Bank Name</Label>
-              <Input
-                id="bankName"
-                placeholder="e.g., Access Bank, GTBank"
-                {...registerAddBank("bankName")}
-              />
-              {addBankErrors.bankName && (
-                <p className="text-red-500 text-sm">{addBankErrors.bankName.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="accountNumber">Account Number</Label>
-              <Input
-                id="accountNumber"
-                placeholder="Enter your 10 or 11 digit account number"
-                {...registerAddBank("accountNumber")}
-              />
-              {addBankErrors.accountNumber && (
-                <p className="text-red-500 text-sm">{addBankErrors.accountNumber.message}</p>
-              )}
-            </div>
-
-            <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddBankModal(false);
-                  resetAddBank();
-                }}
-                className="flex-1 sm:flex-none bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isAddingBank}
-                className="flex-1 sm:flex-none bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isAddingBank ? "Verifying..." : "Add & Verify"}
-              </button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

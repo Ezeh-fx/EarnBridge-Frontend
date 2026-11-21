@@ -186,9 +186,9 @@ export default function DashboardHome() {
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <BoxCard
             padding="p-0"
-            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:h-[30vh]"
+            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:min-h-[30vh]"
           >
-            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full">
+            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full min-w-0 w-full">
               <div className="bg-green-200 p-[3px] w-fit rounded-xl">
                 <img
                   src={images.videoPlayerIcon}
@@ -196,11 +196,11 @@ export default function DashboardHome() {
                   className="h-10 w-10 sm:h-12 sm:w-12 rotate-6"
                 />
               </div>
-              <div className="space-y-1">
-                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1">
+              <div className="space-y-1 min-w-0">
+                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1 break-words">
                   Watch Videos
                 </p>
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-500">
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-500 break-words">
                   Earn rewards by watching
                 </h3>
               </div>
@@ -216,9 +216,9 @@ export default function DashboardHome() {
 
           <BoxCard
             padding="p-0"
-            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:h-[30vh]"
+            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:min-h-[30vh]"
           >
-            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full">
+            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full min-w-0 w-full">
               <div className="bg-green-200 p-[3px] w-fit rounded-xl">
                 <img
                   src={images.walletIcon}
@@ -226,11 +226,11 @@ export default function DashboardHome() {
                   className="h-10 w-10 sm:h-12 sm:w-12"
                 />
               </div>
-              <div className="space-y-1">
-                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1">
+              <div className="space-y-1 min-w-0">
+                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1 break-words">
                   Withdraw
                 </p>
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-500">
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-500 break-words">
                   Cash out your earnings
                 </h3>
               </div>
@@ -246,9 +246,9 @@ export default function DashboardHome() {
 
           <BoxCard
             padding="p-0"
-            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:h-[30vh]"
+            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:min-h-[30vh]"
           >
-            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full">
+            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full min-w-0 w-full">
               <div className="bg-[#dbfae2] p-[3px] w-fit rounded-xl">
                 <img
                   src={images.profileIcon}
@@ -256,11 +256,11 @@ export default function DashboardHome() {
                   className="h-10 w-10 sm:h-12 sm:w-12"
                 />
               </div>
-              <div className="space-y-1">
-                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1">
+              <div className="space-y-1 min-w-0">
+                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1 break-words">
                   Complete Profile
                 </p>
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-500">
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-500 break-words">
                   Finish setting up your account
                 </h3>
               </div>
@@ -276,9 +276,9 @@ export default function DashboardHome() {
 
           <BoxCard
             padding="p-0"
-            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:h-[30vh]"
+            className="overflow-hidden bg-[#effbf5] min-h-[140px] sm:min-h-[160px] lg:min-h-[30vh]"
           >
-            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full">
+            <div className="flex flex-col justify-between space-y-3 sm:space-y-5 p-4 h-full min-w-0 w-full">
               <div className="bg-[#dbfae2] p-[3px] w-fit rounded-xl">
                 <img
                   src={images.referrerPeopleicon}
@@ -286,11 +286,11 @@ export default function DashboardHome() {
                   className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
                 />
               </div>
-              <div className="space-y-1">
-                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1">
+              <div className="space-y-1 min-w-0">
+                <p className="text-gray-900 text-lg sm:text-xl lg:text-2xl font-bold mb-1 break-words">
                   Refer Friends
                 </p>
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-500">
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-500 break-words">
                   Earn from referrals
                 </h3>
               </div>
