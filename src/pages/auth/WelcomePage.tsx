@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setUserId, setHasSeenWelcome } from "@/store/slices/userSlice";
 import { getOrCreateDeviceId } from "@/lib/deviceId";
+import { useAuth } from "@/hooks/auth/use-auth";
 
 export default function WelcomePage() {
   const navigate = useNavigate();
@@ -13,14 +14,24 @@ export default function WelcomePage() {
   // PersistGate guarantees rehydrated state on first render, so the
   // persisted value is captured once and never changes afterwards.
   const [hasSeenWelcomeAtMount] = useState(hasSeenWelcome);
+  const { data: authData, isLoading: authLoading } = useAuth();
 
+  // Get or create device ID (independent of auth state)
   useEffect(() => {
-    // Get or create device ID
     const deviceId = getOrCreateDeviceId();
-    
-    // Set user ID in Redux if not already set
     if (!userId) {
       dispatch(setUserId(deviceId));
+    }
+  }, [userId, dispatch]);
+
+  useEffect(() => {
+    // Wait for the session check before deciding where to send the user
+    if (authLoading) return;
+
+    // Logged-in users go straight to the dashboard
+    if (authData?.user) {
+      navigate("/app", { replace: true });
+      return;
     }
 
     // If user has already seen welcome screen, redirect to signup immediately
@@ -38,10 +49,10 @@ export default function WelcomePage() {
     }, 300000); // 5 minutes = 300000ms
 
     return () => clearTimeout(timer);
-  }, [userId, hasSeenWelcomeAtMount, dispatch, navigate]);
+  }, [authLoading, authData?.user, hasSeenWelcomeAtMount, dispatch, navigate]);
 
   return (
-    <div className="h-screen bg-white relative overflow-hidden flex flex-col">
+    <div className="h-dvh bg-white relative overflow-hidden flex flex-col">
       {/* Top Wave Background */}
       <motion.div
         className="absolute top-0 left-0 right-0 w-full h-24 sm:h-32"
@@ -118,7 +129,7 @@ export default function WelcomePage() {
             <img
               src={images.mascot}
               alt="Person with mobile phone"
-              className="w-full h-auto object-contain max-h-[40vh] sm:max-h-[45vh] md:max-h-[50vh] lg:max-h-[60vh] xl:max-h-[65vh]"
+              className="w-full h-auto object-contain max-h-[40dvh] sm:max-h-[45dvh] md:max-h-[50dvh] lg:max-h-[60dvh] xl:max-h-[65dvh]"
             />
           </motion.div>
         </div>

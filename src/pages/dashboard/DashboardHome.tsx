@@ -2,8 +2,31 @@ import BoxCard from "@/components/reusable/BoxCard";
 import { images } from "@/constants/images";
 import { ArrowUpRight, ArrowRight, Copy } from "lucide-react";
 import { formatMoney } from "@/lib/formatMoney";
+import { useBalance } from "@/hooks/useBalance";
+import { useAppSelector } from "@/store/hooks";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardHome() {
+  const navigate = useNavigate();
+  const profile = useAppSelector((state) => state.user.profile);
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    isError: balanceError,
+    refetch: refetchBalance,
+  } = useBalance();
+
+  const displayName = profile?.displayName || "there";
+  const formatBalance = (value: number | undefined) =>
+    balanceLoading
+      ? "—"
+      : balanceError
+        ? "Unavailable"
+        : formatMoney(value ?? 0);
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
+
   return (
     <div className="space-y-4 sm:space-y-6 px-4 sm:px-5 py-5">
       {/* Hero Banner */}
@@ -11,10 +34,10 @@ export default function DashboardHome() {
         <div className="flex items-center justify-between w-full h-auto">
           <div className="flex-1 px-4 sm:px-6">
             <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 text-green-50">
-              Good Morning!
+              {greeting}!
             </h2>
             <h1 className="text-white font-semibold mb-3 sm:mb-4 text-2xl sm:text-3xl lg:text-5xl">
-              Emmanuel👋
+              {displayName}👋
             </h1>
             <p className="text-white text-sm sm:text-base">
               Click, watch and earn with EarnBridge
@@ -47,10 +70,12 @@ export default function DashboardHome() {
                 Total Earned
               </p>
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                {formatMoney(3240.00)}
+                {formatBalance(balance?.totalEarned)}
               </h3>
               <h3 className="text-xs sm:text-sm text-primary-dark font-semibold">
-                +₦12.50 today
+                {balanceLoading || balanceError
+                  ? ""
+                  : `${formatMoney(balance?.pending ?? 0)} pending`}
               </h3>
             </div>
           </div>
@@ -99,11 +124,23 @@ export default function DashboardHome() {
                 Available Balance
               </p>
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                {formatMoney(0.00)}
+                {formatBalance(balance?.available)}
               </h3>
-              <button className="bg-primary-dark text-white px-3 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium w-fit">
-                Withdraw
-              </button>
+              {balanceError ? (
+                <button
+                  onClick={() => refetchBalance()}
+                  className="bg-primary-dark text-white px-3 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium w-fit"
+                >
+                  Retry
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate("/app/withdraw")}
+                  className="bg-primary-dark text-white px-3 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium w-fit"
+                >
+                  Withdraw
+                </button>
+              )}
             </div>
           </div>
         </BoxCard>
@@ -168,7 +205,10 @@ export default function DashboardHome() {
                 </h3>
               </div>
 
-              <button className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit">
+              <button
+                onClick={() => navigate("/app/watch-ads")}
+                className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit"
+              >
                 <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7" />
               </button>
             </div>
@@ -195,7 +235,10 @@ export default function DashboardHome() {
                 </h3>
               </div>
 
-              <button className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit">
+              <button
+                onClick={() => navigate("/app/withdraw")}
+                className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit"
+              >
                 <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7" />
               </button>
             </div>
@@ -222,7 +265,10 @@ export default function DashboardHome() {
                 </h3>
               </div>
 
-              <button className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit">
+              <button
+                onClick={() => navigate("/app/profile")}
+                className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit"
+              >
                 <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7" />
               </button>
             </div>
@@ -249,7 +295,10 @@ export default function DashboardHome() {
                 </h3>
               </div>
 
-              <button className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit">
+              <button
+                onClick={() => navigate("/app/referrer")}
+                className="flex items-center text-gray-900 hover:text-green-700 bg-[#dcf2e6] p-2 rounded-full w-fit"
+              >
                 <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7" />
               </button>
             </div>
@@ -269,93 +318,117 @@ export default function DashboardHome() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <BoxCard
-            padding="p-2"
-            className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+          <button
+            type="button"
+            onClick={() => navigate("/app/watch-ads")}
+            className="text-left"
           >
-            <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
-              <img
-                src={images.videoPlayerIcon}
-                alt="Watch Videos"
-                className="h-6 w-6 rotate-6"
-              />
-            </div>
+            <BoxCard
+              padding="p-2"
+              className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+            >
+              <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
+                <img
+                  src={images.videoPlayerIcon}
+                  alt="Watch Videos"
+                  className="h-6 w-6 rotate-6"
+                />
+              </div>
 
-            <div>
-              <p className="text-gray-900 text-sm font-bold mb-1">
-                Watch Videos
-              </p>
-              <h3 className="text-[10px] font-semibold text-gray-500">
-                Earn rewards by watching
-              </h3>
-            </div>
-          </BoxCard>
+              <div>
+                <p className="text-gray-900 text-sm font-bold mb-1">
+                  Watch Videos
+                </p>
+                <h3 className="text-[10px] font-semibold text-gray-500">
+                  Earn rewards by watching
+                </h3>
+              </div>
+            </BoxCard>
+          </button>
 
-          <BoxCard
-            padding="p-2"
-            className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+          <button
+            type="button"
+            onClick={() => navigate("/app/withdraw")}
+            className="text-left"
           >
-            <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
-              <img
-                src={images.walletIcon}
-                alt="Wallet"
-                className="h-6 w-6"
-              />
-            </div>
+            <BoxCard
+              padding="p-2"
+              className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+            >
+              <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
+                <img
+                  src={images.walletIcon}
+                  alt="Wallet"
+                  className="h-6 w-6"
+                />
+              </div>
 
-            <div>
-              <p className="text-gray-900 text-sm font-bold mb-1">
-                Withdraw
-              </p>
-              <h3 className="text-[10px] font-semibold text-gray-500">
-                Cash out your earnings
-              </h3>
-            </div>
-          </BoxCard>
+              <div>
+                <p className="text-gray-900 text-sm font-bold mb-1">
+                  Withdraw
+                </p>
+                <h3 className="text-[10px] font-semibold text-gray-500">
+                  Cash out your earnings
+                </h3>
+              </div>
+            </BoxCard>
+          </button>
 
-          <BoxCard
-            padding="p-2"
-            className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+          <button
+            type="button"
+            onClick={() => navigate("/app/profile")}
+            className="text-left"
           >
-            <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
-              <img
-                src={images.profileIcon}
-                alt="Profile"
-                className="h-6 w-6"
-              />
-            </div>
+            <BoxCard
+              padding="p-2"
+              className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+            >
+              <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
+                <img
+                  src={images.profileIcon}
+                  alt="Profile"
+                  className="h-6 w-6"
+                />
+              </div>
 
-            <div>
-              <p className="text-gray-900 text-sm font-bold mb-1">
-                Complete Profile
-              </p>
-              <h3 className="text-[10px] font-semibold text-gray-500">
-                 Finish setting up your account
-              </h3>
-            </div>
-          </BoxCard>
+              <div>
+                <p className="text-gray-900 text-sm font-bold mb-1">
+                  Complete Profile
+                </p>
+                <h3 className="text-[10px] font-semibold text-gray-500">
+                   Finish setting up your account
+                </h3>
+              </div>
+            </BoxCard>
+          </button>
 
-          <BoxCard
-            padding="p-2"
-            className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+          <button
+            type="button"
+            onClick={() => navigate("/app/referrer")}
+            className="text-left"
           >
-            <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
-              <img
-                src={images.referrerPeopleicon}
-                alt="Refer Friends"
-                className="h-7 w-7 object-contain"
-              />
-            </div>
+            <BoxCard
+              padding="p-2"
+              className="overflow-hidden bg-[#effbf5] flex justify-center items-center space-x-3"
+            >
+              <div className="bg-green-200 p-[3px] w-fit h-fit rounded-lg">
+                <img
+                  src={images.referrerPeopleicon}
+                  alt="Refer Friends"
+                  className="h-7 w-7 object-contain"
+                />
+              </div>
 
-            <div>
-              <p className="text-gray-900 text-sm font-bold mb-1">
-                 Refer Friends
-              </p>
-              <h3 className="text-[10px] font-semibold text-gray-500">
-                Earn rewards by referring friends
-              </h3>
-            </div>
-          </BoxCard>
+              <div>
+                <p className="text-gray-900 text-sm font-bold mb-1">
+                   Refer Friends
+                </p>
+                <h3 className="text-[10px] font-semibold text-gray-500">
+                  Earn rewards by referring friends
+                </h3>
+              </div>
+            </BoxCard>
+          </button>
         </div>
       </div>
 

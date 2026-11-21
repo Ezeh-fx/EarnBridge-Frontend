@@ -2,8 +2,16 @@ import BoxCard from "@/components/reusable/BoxCard";
 import { images } from "@/constants/images";
 import { Play, RefreshCw, Clock, DollarSign } from "lucide-react";
 import { formatMoney } from "@/lib/formatMoney";
+import { useBalance } from "@/hooks/useBalance";
+import { PropagateLoader } from "react-spinners";
 
 export default function WatchAdsPage() {
+  const {
+    data: balance,
+    isLoading: balanceLoading,
+    isError: balanceError,
+    refetch: refetchBalance,
+  } = useBalance();
   const featuredVideo = {
     title: "Samsung Galaxy S24 Ultra",
     brand: "Samsung",
@@ -62,7 +70,7 @@ export default function WatchAdsPage() {
             </div>
             <span className="text-gray-600 text-sm font-medium">Earned Today</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{formatMoney(45.00)}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">—</p>
         </BoxCard>
 
         <BoxCard padding="p-4" className="bg-[#effbf5]">
@@ -72,7 +80,25 @@ export default function WatchAdsPage() {
             </div>
             <span className="text-gray-600 text-sm font-medium">Available Balance</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{formatMoney(45.00)}</p>
+          {balanceLoading ? (
+            <PropagateLoader color="#16A34A" size={16} />
+          ) : balanceError ? (
+            <div className="flex items-center gap-3">
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Unavailable
+              </p>
+              <button
+                onClick={() => refetchBalance()}
+                className="text-green-700 text-sm font-semibold hover:underline"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+              {formatMoney(balance?.available ?? 0)}
+            </p>
+          )}
         </BoxCard>
 
         <BoxCard padding="p-4" className="bg-[#effbf5]">

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Camera, User, Mail, Phone, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2, LogOut } from "lucide-react";
+import { Camera, User, Mail, Lock, AlertTriangle, Building2, Plus, CheckCircle, Trash2, LogOut } from "lucide-react";
 import BoxCard from "@/components/reusable/BoxCard";
 import { images } from "@/constants/images";
 import { useBankAccounts } from "@/hooks/useBankAccounts";
@@ -12,12 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AddBankFormData } from "@/types/withdrawal";
 import { useAppSelector } from "@/store/hooks";
+import { useChangePassword, useDeleteAccount } from "@/hooks/auth/use-auth";
 import { PropagateLoader } from "react-spinners";
 
 const profileSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  phoneNumber: z.string().min(1, "Phone number is required"),
 });
 
 const passwordSchema = z.object({
@@ -42,6 +42,9 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAddBankModal, setShowAddBankModal] = useState(false);
   const profile = useAppSelector((state) => state.user.profile);
+  const changePassword = useChangePassword();
+  const deleteAccount = useDeleteAccount();
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   const {
     accounts,
@@ -60,7 +63,6 @@ export default function ProfilePage() {
     defaultValues: {
       fullName: "",
       email: "",
-      phoneNumber: "",
     },
   });
 
@@ -69,7 +71,6 @@ export default function ProfilePage() {
       resetProfile({
         fullName: profile.displayName ?? "",
         email: profile.email,
-        phoneNumber: "",
       });
     }
   }, [profile, resetProfile]);
@@ -107,9 +108,17 @@ export default function ProfilePage() {
   };
 
   const onPasswordSubmit = async (data: PasswordFormData) => {
-    console.log("Password change:", data);
-    // TODO: Call API to change password
-    resetPassword();
+    setPasswordSuccess(false);
+    try {
+      await changePassword.mutateAsync({
+        oldPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
+      resetPassword();
+      setPasswordSuccess(true);
+    } catch {
+      // Error is surfaced via changePassword.error below
+    }
   };
 
   const onAddBankSubmit = async (data: AddBankFormData) => {
@@ -131,8 +140,9 @@ export default function ProfilePage() {
   };
 
   const handleDeleteAccount = () => {
-    console.log("Delete account");
-    // TODO: Call API to delete account
+    deleteAccount.mutate(undefined, {
+      onSettled: () => navigate("/", { replace: true }),
+    });
   };
 
   return (
@@ -197,23 +207,6 @@ export default function ProfilePage() {
             </div>
             {profileErrors.email && (
               <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="tel"
-                {...registerProfile("phoneNumber")}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
-              />
-            </div>
-            {profileErrors.phoneNumber && (
-              <p className="text-red-500 text-sm mt-1">{profileErrors.phoneNumber.message}</p>
             )}
           </div>
         </div>
@@ -347,13 +340,25 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {changePassword.isError && (
+          <p className="text-sm text-red-600 text-center">
+            {changePassword.error.message}
+          </p>
+        )}
+        {passwordSuccess && (
+          <p className="text-sm text-green-600 text-center">
+            Password updated successfully.
+          </p>
+        )}
         <button
           type="button"
           onClick={handleSubmitPassword(onPasswordSubmit)}
-          disabled={isSubmittingPassword}
+          disabled={isSubmittingPassword || changePassword.isPending}
           className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmittingPassword ? "Updating..." : "Update Password"}
+          {isSubmittingPassword || changePassword.isPending
+            ? "Updating..."
+            : "Update Password"}
         </button>
       </BoxCard>
 
@@ -371,7 +376,8 @@ export default function ProfilePage() {
           </div>
           <button
             onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
-            className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors whitespace-nowrap"
+            disabled={deleteAccount.isPending}
+            className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Delete Account
           </button>
@@ -382,18 +388,25 @@ export default function ProfilePage() {
             <p className="text-sm text-gray-600 mb-4">
               Are you sure you want to delete your account? This action cannot be undone.
             </p>
+            {deleteAccount.isError && (
+              <p className="text-sm text-red-600 mb-3">
+                {deleteAccount.error.message}
+              </p>
+            )}
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                disabled={deleteAccount.isPending}
+                className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
-                className="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                disabled={deleteAccount.isPending}
+                className="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Yes, Delete
+                {deleteAccount.isPending ? "Deleting..." : "Yes, Delete"}
               </button>
             </div>
           </div>
